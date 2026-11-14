@@ -1,0 +1,135 @@
+import "server-only";
+import type { Account } from "@/lib/api/types";
+import type { SessionUser } from "@/lib/auth/session";
+import { TOPICS } from "./catalog";
+import { db } from "./db";
+import { streakDays, weekStart } from "./time";
+
+export type UserRow = {
+  id: string;
+  firebase_uid: string;
+  email: string | null;
+  name: string | null;
+  photo_url: string | null;
+};
+
+const STREAK_LOOKBACK_DAYS = 400;
+
+export async function ensureUser(identity: SessionUser): Promise<UserRow> {
+  const sql = db();
+  const [existing] = await sql<UserRow[]>`
+    select id, firebase_uid, email, name, photo_url from users where firebase_uid = ${identity.uid}
+  `;
+  if (!existing) {
+    await sql`
+      insert into users (id, firebase_uid, email, name, photo_url, created_at, updated_at)
+      values (${crypto.randomUUID()}, ${identity.uid}, ${identity.email}, ${identity.name}, ${identity.picture}, now(), now())
+      on conflict (firebase_uid) do nothing
+    `;
+    const [created] = await sql<UserRow[]>`
+      select id, firebase_uid, email, name, photo_url from users where firebase_uid = ${identity.uid}
+    `;
+    return created;
+  }
+  const changed =
+    (identity.email && identity.email !== existing.email) ||
+    (identity.name && identity.name !== existing.name) ||
+    (identity.picture && identity.picture !== existing.photo_url);
+  if (!changed) return existing;
+  const [updated] = await sql<UserRow[]>`
+    update users set
+      email = coalesce(${identity.email}, email),
+      name = coalesce(${identity.name}, name),
+      photo_url = coalesce(${identity.picture}, photo_url),
+      updated_at = now()
+    where id = ${existing.id}
+    returning id, firebase_uid, email, name, photo_url
+  `;
+  return updated;
+}
+
+export async function topicStats(userId: string) {
+  return db()<{ topic: string; answered: number; correct: number }[]>`
+    select qq.topic, count(*)::int as answered, count(*) filter (where qq.is_correct)::int as correct
+    from quiz_questions qq
+    join quizzes q on q.id = qq.quiz_id
+    where q.user_id = ${userId} and q.status = 'completed'
+    group by qq.topic
+  `;
+}
+
+export async function xpTotal(userId: string, since: Date | null) {
+  const [row] = await db()<{ total: number }[]>`
+    select coalesce(sum(amount), 0)::int as total from xp_events
+    where user_id = ${userId} ${since ? db()`and created_at >= ${since}` : db()``}
+  `;
+  return row.total;
+}
+
+export async function rankOf(userId: string, since: Date | null) {
+  const sql = db();
+  const filter = since ? sql`where created_at >= ${since}` : sql``;
+  const [row] = await sql<{ rank: number | null }[]>`
+    with totals as (select user_id, sum(amount) as xp from xp_events ${filter} group by user_id)
+    select case when exists (select 1 from totals where user_id = ${userId})
+      then (select count(*) from totals where xp > (select xp from totals where user_id = ${userId}))::int + 1
+    end as rank
+  `;
+  return row.rank;
+}
+
+function ratio(part: number, whole: number) {
+  return whole ? Math.round((part / whole) * 10000) / 10000 : null;
+}
+
+export async function readAccount(user: UserRow): Promise<Account> {
+  const sql = db();
+  const now = new Date();
+  const since = weekStart(now);
+  const lookback = new Date(now.getTime() - STREAK_LOOKBACK_DAYS * 86_400_000);
+  const [stats, xpAll, xpWeek, weekRank, activity, cards, completed] = await Promise.all([
+    topicStats(user.id),
+    xpTotal(user.id, null),
+    xpTotal(user.id, since),
+    rankOf(user.id, since),
+    sql<{ created_at: Date }[]>`select created_at from xp_events where user_id = ${user.id} and created_at >= ${lookback}`,
+    sql<{ total: number; due: number }[]>`
+      select count(*)::int as total, count(*) filter (where due_at <= now())::int as due
+      from flashcards where user_id = ${user.id}
+    `,
+    sql<{ total: number }[]>`select count(*)::int as total from quizzes where user_id = ${user.id} and status = 'completed'`,
+  ]);
+  const byTopic = new Map(stats.map((row) => [row.topic, row]));
+  const answered = stats.reduce((sum, row) => sum + row.answered, 0);
+  const correct = stats.reduce((sum, row) => sum + row.correct, 0);
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    photo_url: user.photo_url,
+    stats: {
+      xp_total: xpAll,
+      xp_week: xpWeek,
+      week_rank: weekRank,
+      streak_days: streakDays(
+        activity.map((row) => row.created_at),
+        now,
+      ),
+      due_cards: cards[0].due,
+      total_cards: cards[0].total,
+      quizzes_completed: completed[0].total,
+      questions_answered: answered,
+      accuracy: ratio(correct, answered),
+      topics: TOPICS.map((topic) => {
+        const row = byTopic.get(topic.key);
+        return {
+          topic: topic.key,
+          label: topic.label,
+          answered: row?.answered ?? 0,
+          correct: row?.correct ?? 0,
+          accuracy: ratio(row?.correct ?? 0, row?.answered ?? 0) ?? 0,
+        };
+      }),
+    },
+  };
+}

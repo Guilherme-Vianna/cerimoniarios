@@ -8,6 +8,8 @@ import { firstName, formatDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Prova" };
 
+export const maxDuration = 60;
+
 export default async function QuizHomePage({ searchParams }: PageProps<"/prova">) {
   const [{ tema }, topics, account, quizzes] = await Promise.all([searchParams, loadTopics(), loadAccount(), loadQuizzes()]);
   const name = firstName(account.name);

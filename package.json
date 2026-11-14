@@ -7,12 +7,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "db:setup": "tsx --env-file-if-exists=.env.local scripts/db-setup.mts"
   },
   "dependencies": {
+    "@google/genai": "^3.3.0",
     "firebase": "^13.1.0",
     "jose": "^6.2.13",
     "next": "16.4.2",
+    "postgres": "^4.1.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "^0.0.1"
@@ -25,7 +29,9 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.1.0"
   },
   "packageManager": "pnpm@10.28.1",
   "engines": {

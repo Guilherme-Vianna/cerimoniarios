@@ -1,41 +1,46 @@
 import "server-only";
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { apiFetch, ApiError } from "./client";
-import type { Account, Flashcard, Leaderboard, Quiz, QuizSummary, Topic } from "./types";
+import { readAccount } from "@/server/account";
+import { TOPICS } from "@/server/catalog";
+import { currentUser } from "@/server/current-user";
+import { ServiceError } from "@/server/errors";
+import { listFlashcards } from "@/server/flashcards";
+import { readLeaderboard } from "@/server/leaderboard";
+import { getQuiz, listQuizzes } from "@/server/quizzes";
+import type { Topic } from "./types";
 
 export const SESSION_EXPIRED_PATH = "/api/session/expired";
 
-async function load<T>(path: string): Promise<T> {
+async function withUser<T>(task: (user: Awaited<ReturnType<typeof currentUser>>) => Promise<T>): Promise<T> {
+  let user;
   try {
-    return await apiFetch<T>(path);
+    user = await currentUser();
   } catch (error) {
-    if (error instanceof ApiError && error.status === 401) redirect(SESSION_EXPIRED_PATH);
+    if (error instanceof ServiceError && error.status === 401) redirect(SESSION_EXPIRED_PATH);
     throw error;
   }
+  return task(user);
 }
 
-export const loadAccount = cache(() => load<Account>("/me"));
+export const loadAccount = cache(() => withUser(readAccount));
 
-export const loadTopics = cache(() => load<Topic[]>("/topics"));
+export async function loadTopics(): Promise<Topic[]> {
+  return TOPICS.map(({ key, label, description }) => ({ key, label, description }));
+}
 
 export function loadQuizzes() {
-  return load<QuizSummary[]>("/quizzes");
+  return withUser(listQuizzes);
 }
 
-export async function loadQuiz(id: string): Promise<Quiz | null> {
-  try {
-    return await load<Quiz>(`/quizzes/${encodeURIComponent(id)}`);
-  } catch (error) {
-    if (error instanceof ApiError && (error.status === 404 || error.status === 422)) return null;
-    throw error;
-  }
+export function loadQuiz(id: string) {
+  return withUser((user) => getQuiz(user, id));
 }
 
 export function loadFlashcards(options: { due?: boolean } = {}) {
-  return load<Flashcard[]>(`/flashcards${options.due ? "?due=true" : ""}`);
+  return withUser((user) => listFlashcards(user, options));
 }
 
 export function loadLeaderboard(period: "week" | "all") {
-  return load<Leaderboard>(`/leaderboard?period=${period}`);
+  return withUser((user) => readLeaderboard(user, period));
 }
