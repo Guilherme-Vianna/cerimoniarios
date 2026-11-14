@@ -1,4 +1,4 @@
-# cerimoniarios-ui
+# Cerimoniários
 
 App Cerimoniários em um só projeto Next.js 16 (React 19, Tailwind v4): login com Google pelo Firebase, provas sobre a
 liturgia da Missa geradas pelo Gemini (com um banco de 79 perguntas revisadas como reserva), flashcards com repetição
