@@ -1,0 +1,11 @@
+export const SESSION_COOKIE = "session";
+export const LOGIN_PATH = "/";
+export const QUIZ_PATH = "/prova";
+export const HOME_PATH = QUIZ_PATH;
+export const LEGACY_HOME_PATH = "/inicio";
+export const REVIEW_PATH = "/revisar";
+export const CARDS_PATH = "/flashcards";
+export const RANKING_PATH = "/ranking";
+export const HELP_PATH = "/ajuda";
+export const NEXT_PARAM = "next";
+export const PROTECTED_PATHS = [LEGACY_HOME_PATH, QUIZ_PATH, REVIEW_PATH, CARDS_PATH, RANKING_PATH, HELP_PATH];
