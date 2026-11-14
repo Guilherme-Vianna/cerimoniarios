@@ -2,7 +2,8 @@ import Link from "next/link";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { loadAccount } from "@/lib/api/data";
 import { CARDS_PATH, HELP_PATH, HOME_PATH, QUIZ_PATH, RANKING_PATH, REVIEW_PATH } from "@/lib/auth/constants";
-import { Avatar } from "./avatar";
+import { InstallButton } from "@/components/pwa/install-button";
+import { AccountMenu } from "./account-menu";
 import { Logo } from "./logo";
 import { BottomNav, MainNav, type NavItem } from "./main-nav";
 import { NavIcon } from "./nav-icon";
@@ -33,17 +34,18 @@ export async function AppHeader() {
               href={HELP_PATH}
               aria-label="Ajuda: como funciona"
               title="Como funciona"
-              className="flex size-10 items-center justify-center rounded-full text-muted hover:bg-canvas hover:text-ink focus-visible:outline-2 focus-visible:outline-primary"
+              className="hidden size-10 items-center justify-center rounded-full text-muted sm:flex hover:bg-canvas hover:text-ink focus-visible:outline-2 focus-visible:outline-primary"
             >
               <NavIcon name="help" className="size-[22px]" />
             </Link>
-            {account && (
-              <span className="flex items-center gap-2 pl-1" title={account.email ?? undefined}>
-                <Avatar name={name} photoUrl={account.photo_url} size="size-8" />
-                <span className="hidden max-w-36 truncate text-sm font-medium xl:inline">{name}</span>
-              </span>
+            {account ? (
+              <AccountMenu name={name} email={account.email} photoUrl={account.photo_url} />
+            ) : (
+              <SignOutButton />
             )}
-            <SignOutButton />
+            <span className="pl-1">
+              <InstallButton />
+            </span>
           </div>
         </div>
       </header>

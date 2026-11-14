@@ -7,4 +7,3 @@ export const APP_THEME_COLOR = "#7a1f3d";
 export const APP_BACKGROUND_COLOR = "#faf8f5";
 
 export const SERVICE_WORKER_PATH = "/sw.js";
-export const INSTALL_DISMISSED_KEY = "cerimoniarios:pwa-install-dismissed";

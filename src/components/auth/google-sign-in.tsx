@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HOME_PATH, NEXT_PARAM } from "@/lib/auth/constants";
 import { createServerSession } from "@/lib/auth/client-session";
 import { authErrorMessage } from "@/lib/auth/errors";
@@ -74,9 +74,12 @@ export function GoogleSignIn({ expired }: { expired: boolean }) {
 
   if (status === "restoring" || status === "redirecting") {
     return (
-      <div role="status" className="flex items-center gap-3 text-muted">
-        <Spinner />
-        <span>{status === "restoring" ? "Verificando sua sessão…" : "Tudo certo! Abrindo sua área…"}</span>
+      <div role="status" className="flex flex-col gap-4">
+        <span className="sr-only">
+          {status === "restoring" ? "Verificando sua sessão…" : "Tudo certo! Abrindo sua área…"}
+        </span>
+        <Skeleton className="h-12 w-full rounded-full" />
+        <Skeleton className="h-4 w-4/5" />
       </div>
     );
   }

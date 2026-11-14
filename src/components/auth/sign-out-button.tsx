@@ -23,7 +23,7 @@ export function SignOutButton() {
       type="button"
       onClick={handleSignOut}
       disabled={pending}
-      className="cursor-pointer rounded-full px-3 py-2 text-sm font-medium text-muted hover:bg-canvas hover:text-ink focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-wait"
+      className="w-full cursor-pointer rounded-xl px-3 py-2 text-left text-sm font-medium text-muted hover:bg-canvas hover:text-ink focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-wait"
     >
       {pending ? "Saindo…" : "Sair"}
     </button>

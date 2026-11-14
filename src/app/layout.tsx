@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Geist } from "next/font/google";
-import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import { APP_DESCRIPTION, APP_NAME, APP_THEME_COLOR } from "@/lib/pwa";
 import "./globals.css";
@@ -45,7 +44,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="pt-BR" className={`${geistSans.variable} ${serif.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">
         {children}
-        <InstallPrompt />
         <ServiceWorkerRegister />
       </body>
     </html>

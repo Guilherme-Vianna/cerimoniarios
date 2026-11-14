@@ -6,7 +6,7 @@ import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Modal } from "@/components/ui/modal";
-import { Spinner } from "@/components/ui/spinner";
+import { QuizRunnerSkeleton } from "@/components/app/page-skeletons";
 import { abandonQuiz, submitQuiz } from "@/lib/actions";
 import type { Quiz } from "@/lib/api/types";
 import { QUIZ_PATH } from "@/lib/auth/constants";
@@ -40,14 +40,7 @@ const noopSubscribe = () => () => {};
 
 export function QuizRunner({ quiz }: { quiz: Quiz }) {
   const isClient = useSyncExternalStore(noopSubscribe, () => true, () => false);
-  if (!isClient) {
-    return (
-      <div role="status" className="flex items-center gap-3 py-10 text-muted">
-        <Spinner />
-        <span>Abrindo a prova…</span>
-      </div>
-    );
-  }
+  if (!isClient) return <QuizRunnerSkeleton />;
   return <Runner quiz={quiz} saved={readSaved(quiz.id)} />;
 }
 
