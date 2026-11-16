@@ -48,6 +48,10 @@ export async function ensureUser(identity: SessionUser): Promise<UserRow> {
   return updated;
 }
 
+export async function deleteAccountData(userId: string) {
+  await db()`delete from users where id = ${userId}`;
+}
+
 export async function topicStats(userId: string) {
   return db()<{ topic: string; answered: number; correct: number }[]>`
     select qq.topic, count(*)::int as answered, count(*) filter (where qq.is_correct)::int as correct

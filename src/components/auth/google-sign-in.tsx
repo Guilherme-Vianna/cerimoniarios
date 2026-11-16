@@ -1,6 +1,13 @@
 "use client";
 
-import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithCredential,
+  signInWithPopup,
+  signOut,
+  type User,
+} from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Alert } from "@/components/ui/alert";
@@ -11,6 +18,7 @@ import { createServerSession } from "@/lib/auth/client-session";
 import { authErrorMessage } from "@/lib/auth/errors";
 import { safeNextPath } from "@/lib/auth/next-path";
 import { createGoogleProvider, getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase/client";
+import { isNativeApp, nativeGoogleIdToken } from "@/lib/native-app";
 import { GoogleIcon } from "./google-icon";
 
 type Status = "restoring" | "idle" | "google" | "redirecting";
@@ -55,7 +63,10 @@ export function GoogleSignIn({ expired }: { expired: boolean }) {
     setError(null);
     setStatus("google");
     try {
-      const { user } = await signInWithPopup(getFirebaseAuth(), createGoogleProvider());
+      const auth = getFirebaseAuth();
+      const { user } = isNativeApp()
+        ? await signInWithCredential(auth, GoogleAuthProvider.credential(await nativeGoogleIdToken()))
+        : await signInWithPopup(auth, createGoogleProvider());
       await finish(user);
     } catch (caught) {
       setError(authErrorMessage(caught));

@@ -42,6 +42,7 @@ Importe este repositório na Vercel (framework Next.js) e cadastre em Settings �
 | `GEMINI_MODEL` | não | Padrão `gemini-3.8-flash` |
 | `GEMINI_TIMEOUT_SECONDS` | não | Padrão `45` (a página da prova tem `maxDuration = 60`) |
 | `LEADERBOARD_TIMEZONE` | não | Padrão `America/Sao_Paulo` |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | não | E-mail de contato mostrado na política de privacidade (use o mesmo da Play Store) |
 
 As tabelas já existem no Neon de produção; num banco novo, rode `pnpm db:setup` uma vez com o `DATABASE_URL` dele.
 As variáveis `NEXT_PUBLIC_*` entram no build: depois de mudar alguma, faça um novo deploy. No Firebase, adicione o

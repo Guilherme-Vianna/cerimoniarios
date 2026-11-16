@@ -4,6 +4,7 @@ import { refresh } from "next/cache";
 import type { Rating, ReviewResult } from "@/lib/api/types";
 import { currentUser } from "@/server/current-user";
 import { ServiceError } from "@/server/errors";
+import { deleteAccountData } from "@/server/account";
 import { deleteFlashcard, reviewFlashcard } from "@/server/flashcards";
 import { createQuiz, deleteQuiz, submitQuiz as submitQuizService } from "@/server/quizzes";
 
@@ -66,4 +67,11 @@ export async function deleteCard(cardId: string): Promise<ActionResult> {
 
 export async function refreshPage(): Promise<void> {
   refresh();
+}
+
+export async function deleteAccount(): Promise<ActionResult> {
+  return run(async () => {
+    await deleteAccountData((await currentUser()).id);
+    return null;
+  });
 }

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Logo } from "@/components/app/logo";
 import { GoogleSignIn } from "@/components/auth/google-sign-in";
+import { Alert } from "@/components/ui/alert";
+import { ACCOUNT_DELETED_PARAM, PRIVACY_PATH } from "@/lib/auth/constants";
 
 export const metadata: Metadata = {
   title: "Entrar",
@@ -22,7 +25,8 @@ const steps = [
 ];
 
 export default async function LoginPage({ searchParams }: PageProps<"/">) {
-  const { sessao } = await searchParams;
+  const params = await searchParams;
+  const deleted = params[ACCOUNT_DELETED_PARAM] === "excluida";
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-6 sm:px-8">
       <header>
@@ -37,8 +41,9 @@ export default async function LoginPage({ searchParams }: PageProps<"/">) {
           <p className="mt-4 text-lg text-muted">
             Estude a liturgia da Missa no seu ritmo: provas, flashcards e um ranking entre cerimoniários.
           </p>
-          <div className="mt-10">
-            <GoogleSignIn expired={sessao === "expirada"} />
+          <div className="mt-10 flex flex-col gap-4">
+            {deleted && <Alert tone="success">Sua conta foi excluída. Obrigado por ter estudado com a gente.</Alert>}
+            <GoogleSignIn expired={params.sessao === "expirada"} />
           </div>
         </section>
 
@@ -63,6 +68,12 @@ export default async function LoginPage({ searchParams }: PageProps<"/">) {
           ))}
         </ol>
       </main>
+
+      <footer className="border-t border-border pt-6 text-sm text-muted">
+        <Link href={PRIVACY_PATH} className="font-medium hover:text-ink hover:underline">
+          Política de privacidade
+        </Link>
+      </footer>
     </div>
   );
 }

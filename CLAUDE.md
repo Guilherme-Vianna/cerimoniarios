@@ -24,8 +24,9 @@ reviews give XP for a weekly and all-time leaderboard. One Next.js app deployed 
 ## Layout
 
 ```
-src/app/            routes; (app)/ = signed-in area: prova, prova/[id], flashcards, revisar, ranking, ajuda
+src/app/            routes; (app)/ = signed-in area: prova, prova/[id], flashcards, revisar, ranking, ajuda, conta
                     (inicio redirects to /prova); each has a loading.tsx skeleton; template.tsx = page transition
+                    (legal)/ = public pages required by Google Play: privacidade, excluir-conta (keep them truthful)
 src/app/api/session cookie endpoints (POST/DELETE) and /expired (clears cookie, relative redirect to login)
 src/server/         business logic, server-only: db, account, quizzes, flashcards, leaderboard, gemini,
                     generation (sanitize/shuffle), question-bank(+ -data), srs, time, catalog, errors, current-user
@@ -38,6 +39,9 @@ tests/              Vitest unit tests for pure server modules
 ## Data flow and auth
 
 1. Client signs in with Firebase (`signInWithPopup`), POSTs the ID token to `/api/session` → httpOnly `session` cookie.
+   Inside the Android app (`../android`, a WebView) Google blocks the popup, so `lib/native-app.ts` asks the app for a
+   Google ID token through `window.CerimoniariosAndroid` and signs in with `signInWithCredential`; the install button
+   is hidden there. Keep the bridge protocol in sync with `android/.../auth/NativeBridge.kt`.
 2. `SessionRefresher` posts refreshed tokens; `proxy.ts` only redirects by cookie presence (`PROTECTED_PATHS`).
 3. Pages read through `lib/api/data.ts`, mutations go through `lib/actions.ts`; both resolve the user with
    `server/current-user.ts` (verify token + upsert `users` row, React `cache()`).
@@ -58,6 +62,8 @@ tests/              Vitest unit tests for pure server modules
   answer, +20 for a perfect quiz. In-progress quizzes can be abandoned (deleted); completed ones are kept.
 - SRS (`server/srs.ts`, SM-2 style): Again = back in 10 min and to the end of the session queue; Hard/Good/Easy space
   by days. Reviews give 1–3 XP only when the card was due.
+- Account deletion (`/conta`): re-authenticate with Google, `deleteAccount` action deletes the `users` row (everything
+  cascades), then the Firebase user is deleted best effort. New tables need `on delete cascade` to `users`.
 - Leaderboard: week starts Monday 00:00 `LEADERBOARD_TIMEZONE` (America/Sao_Paulo); ties share the rank.
 
 ## Database

@@ -1,17 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { isNativeApp } from "@/lib/native-app";
 import { APP_NAME } from "@/lib/pwa";
 import { useInstall, type InstallPlatform } from "@/lib/pwa-install";
 
+const noSubscription = () => () => {};
+
 export function InstallButton() {
   const { installed, canPromptNatively, platform, secure, promptInstall } = useInstall();
+  const nativeApp = useSyncExternalStore(noSubscription, isNativeApp, () => false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  if (installed) return null;
+  if (installed || nativeApp) return null;
 
   async function handleClick() {
     if (canPromptNatively) {

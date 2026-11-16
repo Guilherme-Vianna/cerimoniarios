@@ -6,6 +6,7 @@ import { useState } from "react";
 import { LOGIN_PATH } from "@/lib/auth/constants";
 import { destroyServerSession } from "@/lib/auth/client-session";
 import { getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase/client";
+import { nativeSignOut } from "@/lib/native-app";
 
 export function SignOutButton() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export function SignOutButton() {
   async function handleSignOut() {
     setPending(true);
     if (isFirebaseConfigured()) await signOut(getFirebaseAuth());
+    await nativeSignOut();
     await destroyServerSession();
     router.replace(LOGIN_PATH);
   }

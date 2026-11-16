@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
-import { HELP_PATH } from "@/lib/auth/constants";
+import { ACCOUNT_PATH, HELP_PATH } from "@/lib/auth/constants";
 import { Avatar } from "./avatar";
 
 export function AccountMenu({ name, email, photoUrl }: { name: string; email: string | null; photoUrl: string | null }) {
@@ -51,6 +51,13 @@ export function AccountMenu({ name, email, photoUrl }: { name: string; email: st
             {email && <p className="truncate text-sm text-muted">{email}</p>}
           </div>
           <div className="mt-1 border-t border-border pt-1">
+            <Link
+              href={ACCOUNT_PATH}
+              onClick={() => setOpen(false)}
+              className="block rounded-xl px-3 py-2 text-sm font-medium text-muted hover:bg-canvas hover:text-ink focus-visible:outline-2 focus-visible:outline-primary"
+            >
+              Minha conta
+            </Link>
             <Link
               href={HELP_PATH}
               onClick={() => setOpen(false)}

@@ -12,9 +12,15 @@ const messages: Record<string, string> = {
   "auth/account-exists-with-different-credential":
     "Este e-mail já está cadastrado com outro método de login. Entre com e-mail e senha.",
   "auth/user-disabled": "Esta conta foi desativada. Fale com o suporte.",
+  "auth/user-mismatch": "Escolha a mesma conta Google que você usa no Cerimoniários.",
+  "auth/requires-recent-login": "Por segurança, saia e entre de novo antes de excluir a conta.",
+  "native/no-account":
+    "Nenhuma conta Google neste aparelho. Adicione uma conta nas configurações do Android e tente de novo.",
+  "native/not-configured": "O login pelo app ainda não está configurado. Atualize o app e tente de novo.",
 };
 
 const silentCodes = new Set([
+  "native/cancelled",
   "auth/popup-closed-by-user",
   "auth/cancelled-popup-request",
   "auth/user-cancelled",
