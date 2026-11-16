@@ -10,6 +10,8 @@ export const CARDS_PATH = "/flashcards";
 export const RANKING_PATH = "/ranking";
 export const HELP_PATH = "/ajuda";
 export const ACCOUNT_PATH = "/conta";
+/** Ad landing: `/prova` without a session comes here, signs in as a guest and goes back to the quiz. */
+export const GUEST_START_PATH = "/comecar";
 export const PRIVACY_PATH = "/privacidade";
 export const DELETE_ACCOUNT_INFO_PATH = "/excluir-conta";
 export const ACCOUNT_DELETED_PARAM = "conta";

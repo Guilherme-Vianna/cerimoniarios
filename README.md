@@ -73,6 +73,9 @@ A Google Tag carrega em todas as páginas quando `NEXT_PUBLIC_GOOGLE_TAG_ID` est
 | `sign_up` | Criou conta (Google pela primeira vez ou e-mail) | Opcional |
 | `login`, `guest_start`, `share` | Entrou, começou como visitante, compartilhou a pontuação | Só para análise |
 
+Use `https://cerimoniarios-gilt.vercel.app/prova` como URL final dos anúncios: quem chega sem login entra
+automaticamente como visitante (via `/comecar`, mantendo `gclid` e `utm_*`) e já cai na prova.
+
 No Google Ads, crie as conversões em Metas → Conversões → Site → configuração manual com código, copie o rótulo de cada
 uma para a variável correspondente e use contagem "Uma" para `complete_quiz` e `sign_up`. A doação por Pix e o botão de
 compartilhar só aparecem no site, depois do resultado da prova; no app Android a doação fica escondida (a Google Play

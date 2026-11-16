@@ -18,6 +18,12 @@ describe("proxy", () => {
     expect(visit("/ranking")).toBe("/?next=%2Franking");
   });
 
+  it("starts a guest session for ad visitors who land on the quiz page", () => {
+    expect(visit("/prova")).toBe("/comecar");
+    expect(visit("/prova?gclid=abc&utm_source=google")).toBe("/comecar?gclid=abc&utm_source=google");
+    expect(visit("/prova/abc")).toBe("/?next=%2Fprova%2Fabc");
+  });
+
   it("lets guests take quizzes", () => {
     expect(visit("/prova", guest)).toBeNull();
     expect(visit("/prova/abc", guest)).toBeNull();

@@ -2,10 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
   ACCOUNT_ONLY_PATHS,
   GUEST_COOKIE,
+  GUEST_START_PATH,
   HOME_PATH,
   LOGIN_PATH,
   NEXT_PARAM,
   PROTECTED_PATHS,
+  QUIZ_PATH,
   SESSION_COOKIE,
 } from "@/lib/auth/constants";
 import { safeNextPath } from "@/lib/auth/next-path";
@@ -29,6 +31,11 @@ export function proxy(request: NextRequest) {
   if (pathname === LOGIN_PATH && hasSession && !isGuest) {
     const next = safeNextPath(searchParams.get(NEXT_PARAM)) ?? HOME_PATH;
     return NextResponse.redirect(new URL(next, request.url));
+  }
+  if (pathname === QUIZ_PATH && !hasSession) {
+    const start = new URL(GUEST_START_PATH, request.url);
+    start.search = request.nextUrl.search;
+    return NextResponse.redirect(start);
   }
   if (matches(pathname, PROTECTED_PATHS) && !hasSession) return toLogin(request);
   if (matches(pathname, ACCOUNT_ONLY_PATHS) && isGuest) return toLogin(request);
