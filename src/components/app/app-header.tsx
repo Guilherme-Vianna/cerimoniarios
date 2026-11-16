@@ -4,6 +4,7 @@ import { loadAccount } from "@/lib/api/data";
 import { CARDS_PATH, HELP_PATH, HOME_PATH, QUIZ_PATH, RANKING_PATH, REVIEW_PATH } from "@/lib/auth/constants";
 import { InstallButton } from "@/components/pwa/install-button";
 import { AccountMenu } from "./account-menu";
+import { loginHref } from "./guest-notice";
 import { Logo } from "./logo";
 import { BottomNav, MainNav, type NavItem } from "./main-nav";
 import { NavIcon } from "./nav-icon";
@@ -23,10 +24,10 @@ export async function AppHeader() {
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
           <Link
             href={HOME_PATH}
-            aria-label="Cerimoniários, ir para o início"
+            aria-label="Cerimoniários Católicos, ir para o início"
             className="shrink-0 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
-            <Logo />
+            <Logo compact />
           </Link>
           <MainNav items={items} />
           <div className="flex items-center gap-1">
@@ -38,7 +39,14 @@ export async function AppHeader() {
             >
               <NavIcon name="help" className="size-[22px]" />
             </Link>
-            {account ? (
+            {account?.is_guest ? (
+              <Link
+                href={loginHref()}
+                className="flex h-9 items-center rounded-full border border-border px-3.5 text-sm font-medium text-ink hover:border-border-strong hover:bg-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                Entrar
+              </Link>
+            ) : account ? (
               <AccountMenu name={name} email={account.email} photoUrl={account.photo_url} />
             ) : (
               <SignOutButton />

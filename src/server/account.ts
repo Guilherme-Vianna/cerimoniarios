@@ -11,6 +11,7 @@ export type UserRow = {
   email: string | null;
   name: string | null;
   photo_url: string | null;
+  is_guest: boolean;
 };
 
 const STREAK_LOOKBACK_DAYS = 400;
@@ -18,16 +19,17 @@ const STREAK_LOOKBACK_DAYS = 400;
 export async function ensureUser(identity: SessionUser): Promise<UserRow> {
   const sql = db();
   const [existing] = await sql<UserRow[]>`
-    select id, firebase_uid, email, name, photo_url from users where firebase_uid = ${identity.uid}
+    select id, firebase_uid, email, name, photo_url, is_guest from users where firebase_uid = ${identity.uid}
   `;
   if (!existing) {
     await sql`
-      insert into users (id, firebase_uid, email, name, photo_url, created_at, updated_at)
-      values (${crypto.randomUUID()}, ${identity.uid}, ${identity.email}, ${identity.name}, ${identity.picture}, now(), now())
+      insert into users (id, firebase_uid, email, name, photo_url, is_guest, created_at, updated_at)
+      values (${crypto.randomUUID()}, ${identity.uid}, ${identity.email}, ${identity.name}, ${identity.picture},
+        ${identity.isGuest}, now(), now())
       on conflict (firebase_uid) do nothing
     `;
     const [created] = await sql<UserRow[]>`
-      select id, firebase_uid, email, name, photo_url from users where firebase_uid = ${identity.uid}
+      select id, firebase_uid, email, name, photo_url, is_guest from users where firebase_uid = ${identity.uid}
     `;
     return created;
   }
@@ -43,9 +45,32 @@ export async function ensureUser(identity: SessionUser): Promise<UserRow> {
       photo_url = coalesce(${identity.picture}, photo_url),
       updated_at = now()
     where id = ${existing.id}
-    returning id, firebase_uid, email, name, photo_url
+    returning id, firebase_uid, email, name, photo_url, is_guest
   `;
   return updated;
+}
+
+/**
+ * Moves everything a guest (Firebase anonymous user) did into the account it just signed in to, so a quiz taken
+ * before logging in counts. Flashcards whose front the account already has are dropped to avoid duplicates.
+ */
+export async function claimGuestData(target: UserRow, guestUid: string) {
+  if (target.is_guest || guestUid === target.firebase_uid) return;
+  await db().begin(async (tx) => {
+    const [guest] = await tx<{ id: string }[]>`
+      select id from users where firebase_uid = ${guestUid} and is_guest for update
+    `;
+    if (!guest) return;
+    await tx`
+      delete from flashcards g
+      where g.user_id = ${guest.id}
+        and exists (select 1 from flashcards f where f.user_id = ${target.id} and f.front = g.front)
+    `;
+    await tx`update flashcards set user_id = ${target.id} where user_id = ${guest.id}`;
+    await tx`update quizzes set user_id = ${target.id}, updated_at = now() where user_id = ${guest.id}`;
+    await tx`update xp_events set user_id = ${target.id} where user_id = ${guest.id}`;
+    await tx`delete from users where id = ${guest.id}`;
+  });
 }
 
 export async function deleteAccountData(userId: string) {
@@ -72,9 +97,14 @@ export async function xpTotal(userId: string, since: Date | null) {
 
 export async function rankOf(userId: string, since: Date | null) {
   const sql = db();
-  const filter = since ? sql`where created_at >= ${since}` : sql``;
+  const filter = since ? sql`where x.created_at >= ${since}` : sql``;
   const [row] = await sql<{ rank: number | null }[]>`
-    with totals as (select user_id, sum(amount) as xp from xp_events ${filter} group by user_id)
+    with totals as (
+      select x.user_id, sum(x.amount) as xp
+      from xp_events x join users u on u.id = x.user_id and not u.is_guest
+      ${filter}
+      group by x.user_id
+    )
     select case when exists (select 1 from totals where user_id = ${userId})
       then (select count(*) from totals where xp > (select xp from totals where user_id = ${userId}))::int + 1
     end as rank
@@ -111,6 +141,7 @@ export async function readAccount(user: UserRow): Promise<Account> {
     email: user.email,
     name: user.name,
     photo_url: user.photo_url,
+    is_guest: user.is_guest,
     stats: {
       xp_total: xpAll,
       xp_week: xpWeek,

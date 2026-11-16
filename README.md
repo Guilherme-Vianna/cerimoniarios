@@ -1,6 +1,7 @@
-# Cerimoniários
+# Cerimoniários Católicos
 
-App Cerimoniários em um só projeto Next.js 16 (React 19, Tailwind v4): login com Google pelo Firebase, provas sobre a
+App Cerimoniários Católicos em um só projeto Next.js 16 (React 19, Tailwind v4): login pelo Firebase (Google, e-mail e
+senha ou visitante), provas sobre a
 liturgia da Missa geradas pelo Gemini (com um banco de 79 perguntas revisadas como reserva), flashcards com repetição
 espaçada, XP e ranking. O "backend" roda no próprio Next (server actions e `src/server/`), falando direto com o
 PostgreSQL (Neon). Não há API separada.
@@ -47,3 +48,7 @@ Importe este repositório na Vercel (framework Next.js) e cadastre em Settings �
 As tabelas já existem no Neon de produção; num banco novo, rode `pnpm db:setup` uma vez com o `DATABASE_URL` dele.
 As variáveis `NEXT_PUBLIC_*` entram no build: depois de mudar alguma, faça um novo deploy. No Firebase, adicione o
 domínio da Vercel em Authentication → Settings → Authorized domains, senão o login com Google é bloqueado.
+
+No Firebase, em Authentication → Sign-in method, ative **Google**, **E-mail/senha** e **Anônimo** (o anônimo é o modo
+visitante, que permite fazer a prova sem entrar). Depois de atualizar o código, rode `pnpm db:setup` no banco de produção:
+ele adiciona a coluna `users.is_guest`.

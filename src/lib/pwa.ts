@@ -1,4 +1,6 @@
-export const APP_NAME = "Cerimoniários";
+export const APP_NAME = "Cerimoniários Católicos";
+/** Fits under a home screen icon. */
+export const APP_SHORT_NAME = "Cerimoniários";
 export const APP_DESCRIPTION =
   "Provas, flashcards e ranking para cerimoniários e acólitos aprenderem a liturgia da Missa.";
 

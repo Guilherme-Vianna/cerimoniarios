@@ -16,9 +16,10 @@ export async function readLeaderboard(user: UserRow, period: "week" | "all"): Pr
   const since = period === "week" ? weekStart(new Date()) : null;
   const rows = await sql<{ id: string; name: string | null; email: string | null; photo_url: string | null; xp: number }[]>`
     with totals as (
-      select user_id, sum(amount)::int as xp from xp_events
-      ${since ? sql`where created_at >= ${since}` : sql``}
-      group by user_id
+      select x.user_id, sum(x.amount)::int as xp
+      from xp_events x join users u on u.id = x.user_id and not u.is_guest
+      ${since ? sql`where x.created_at >= ${since}` : sql``}
+      group by x.user_id
     )
     select u.id, u.name, u.email, u.photo_url, t.xp
     from totals t join users u on u.id = t.user_id

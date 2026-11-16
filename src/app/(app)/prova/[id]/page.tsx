@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { QuizResult } from "@/components/quiz/quiz-result";
 import { QuizRunner } from "@/components/quiz/quiz-runner";
 import { LinkButton } from "@/components/ui/link-button";
-import { loadQuiz } from "@/lib/api/data";
+import { loadAccount, loadQuiz } from "@/lib/api/data";
 import { QUIZ_PATH } from "@/lib/auth/constants";
 
 export const metadata: Metadata = { title: "Prova" };
 
 export default async function QuizPage({ params }: PageProps<"/prova/[id]">) {
   const { id } = await params;
-  const quiz = await loadQuiz(id);
+  const [quiz, account] = await Promise.all([loadQuiz(id), loadAccount()]);
 
   if (!quiz) {
     return (
@@ -21,6 +21,6 @@ export default async function QuizPage({ params }: PageProps<"/prova/[id]">) {
     );
   }
 
-  if (quiz.status === "completed") return <QuizResult quiz={quiz} />;
+  if (quiz.status === "completed") return <QuizResult quiz={quiz} guest={account.is_guest} />;
   return <QuizRunner key={quiz.id} quiz={quiz} />;
 }

@@ -15,7 +15,7 @@ export default function PrivacyPage() {
       </div>
 
       <p className="text-lg leading-relaxed text-muted">
-        O Cerimoniários é um app gratuito para cerimoniários e acólitos estudarem a liturgia da Missa, no site e no app
+        O Cerimoniários Católicos é um app gratuito para cerimoniários e acólitos estudarem a liturgia da Missa, no site e no app
         para Android. Esta página explica quais dados usamos, por quê e como você pode apagá-los, de acordo com a Lei
         Geral de Proteção de Dados (LGPD).
       </p>
@@ -23,8 +23,13 @@ export default function PrivacyPage() {
       <LegalSection title="Dados que coletamos">
         <ul>
           <li>
-            <strong>Conta Google:</strong> nome, e-mail, foto de perfil e um identificador da conta, recebidos quando
-            você entra com o Google. Não temos acesso à sua senha.
+            <strong>Conta:</strong> se você entra com o Google, recebemos nome, e-mail, foto de perfil e um identificador
+            da conta. Se cria uma conta com e-mail e senha, guardamos o nome e o e-mail que você informou; a senha fica
+            só com o Firebase Authentication, nunca conosco.
+          </li>
+          <li>
+            <strong>Visitante:</strong> quem faz uma prova sem entrar recebe um identificador anônimo, sem nome nem
+            e-mail. Quando você entra, as provas, os flashcards e o XP feitos como visitante passam para a sua conta.
           </li>
           <li>
             <strong>Seu estudo:</strong> as provas que você faz e as respostas, os flashcards, as revisões e os pontos de
@@ -47,7 +52,8 @@ export default function PrivacyPage() {
           <li>Identificar você e guardar seu progresso.</li>
           <li>Montar provas e revisões, priorizando os temas em que você erra mais.</li>
           <li>
-            Mostrar o ranking: <strong>seu nome, sua foto e seu XP ficam visíveis para quem usa o app</strong>.
+            Mostrar o ranking: <strong>seu nome, sua foto e seu XP ficam visíveis para quem usa o app</strong>. Visitantes
+            não aparecem no ranking.
           </li>
           <li>No app para Android, mostrar anúncios e remover os anúncios de quem contribuiu.</li>
         </ul>
@@ -60,7 +66,7 @@ export default function PrivacyPage() {
       <LegalSection title="Com quem compartilhamos">
         <p>Usamos serviços de terceiros que tratam dados em nosso nome:</p>
         <ul>
-          <li>Google Firebase Authentication, para o login com Google.</li>
+          <li>Google Firebase Authentication, para o login (Google, e-mail e senha ou visitante).</li>
           <li>Neon, banco de dados onde ficam suas provas, flashcards e XP.</li>
           <li>Vercel, que hospeda o site.</li>
           <li>Google Gemini, que gera as perguntas (sem dados que identifiquem você).</li>
@@ -80,7 +86,8 @@ export default function PrivacyPage() {
       <LegalSection title="Por quanto tempo guardamos">
         <p>
           Guardamos seus dados enquanto sua conta existir. Ao excluir a conta, apagamos na hora suas provas, flashcards,
-          XP e cadastro, e você sai do ranking.
+          XP e cadastro, e você sai do ranking. Provas de visitante que nunca passarem para uma conta ficam guardadas só
+          com o identificador anônimo.
         </p>
       </LegalSection>
 

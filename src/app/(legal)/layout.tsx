@@ -8,7 +8,7 @@ export default function LegalLayout({ children }: LayoutProps<"/">) {
       <header>
         <Link
           href={LOGIN_PATH}
-          aria-label="Cerimoniários, ir para o início"
+          aria-label="Cerimoniários Católicos, ir para o início"
           className="inline-flex rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
           <Logo />

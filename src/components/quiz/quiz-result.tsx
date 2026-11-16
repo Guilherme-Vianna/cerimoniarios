@@ -1,3 +1,4 @@
+import { GuestNotice } from "@/components/app/guest-notice";
 import { LinkButton } from "@/components/ui/link-button";
 import { ReferenceLink } from "@/components/ui/reference-link";
 import type { Question, Quiz } from "@/lib/api/types";
@@ -14,13 +15,19 @@ function verdict(score: number, total: number) {
   return "Sem problema: é errando que se aprende. Revise os flashcards e tente de novo.";
 }
 
-export function QuizResult({ quiz }: { quiz: Quiz }) {
+export function QuizResult({ quiz, guest = false }: { quiz: Quiz; guest?: boolean }) {
   const score = quiz.score ?? 0;
   const cards = quiz.cards_created ?? 0;
   const usedBank = quiz.questions.some((question) => question.source === "bank");
 
   return (
     <div className="flex flex-col gap-8">
+      {guest && (
+        <GuestNotice next={`${QUIZ_PATH}/${quiz.id}`}>
+          Este resultado está guardado como visitante. Entre com Google ou e-mail para que o XP conte no ranking e os
+          flashcards fiquem na sua conta.
+        </GuestNotice>
+      )}
       <section aria-labelledby="result-title" className="animate-fade-up rounded-3xl border border-border bg-surface p-6 sm:p-8">
         <p className="text-sm font-medium text-gold">
           {quiz.topic_label}

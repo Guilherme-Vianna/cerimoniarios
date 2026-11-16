@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Geist } from "next/font/google";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
-import { APP_DESCRIPTION, APP_NAME, APP_THEME_COLOR } from "@/lib/pwa";
+import { APP_DESCRIPTION, APP_NAME, APP_SHORT_NAME, APP_THEME_COLOR } from "@/lib/pwa";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
   appleWebApp: {
     capable: true,
-    title: APP_NAME,
+    title: APP_SHORT_NAME,
     statusBarStyle: "default",
   },
   formatDetection: {

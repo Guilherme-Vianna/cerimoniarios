@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GuestNotice } from "@/components/app/guest-notice";
 import { QuizSetup } from "@/components/quiz/quiz-setup";
 import { LinkButton } from "@/components/ui/link-button";
 import { loadAccount, loadQuizzes, loadTopics } from "@/lib/api/data";
@@ -22,6 +23,10 @@ export default async function QuizHomePage({ searchParams }: PageProps<"/prova">
         <h1 className="font-serif text-4xl font-bold tracking-tight">{name ? `Olá, ${name}!` : "Olá!"}</h1>
         <p className="mt-2 text-muted">Responda a prova e revise o que errar nos flashcards.</p>
       </div>
+
+      {account.is_guest && (
+        <GuestNotice>Você está como visitante. Entre para guardar suas provas, flashcards e XP na sua conta.</GuestNotice>
+      )}
 
       {inProgress ? (
         <section className="flex flex-col gap-4 rounded-3xl border border-primary/20 bg-primary-soft p-6">

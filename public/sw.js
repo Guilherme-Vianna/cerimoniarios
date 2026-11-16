@@ -1,5 +1,5 @@
 /*
- * Service worker do Cerimoniários.
+ * Service worker do Cerimoniários Católicos.
  *
  * Estratégia deliberadamente conservadora (o app é autenticado e dinâmico):
  * - Navegações: sempre rede; sem conexão, cai na página estática /offline.html.

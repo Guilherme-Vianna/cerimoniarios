@@ -8,6 +8,8 @@ export type SessionUser = {
   email: string | null;
   name: string | null;
   picture: string | null;
+  /** Firebase anonymous sign-in: may take quizzes, stays off the leaderboard until it signs in for real. */
+  isGuest: boolean;
 };
 
 const jwks = createRemoteJWKSet(
@@ -26,11 +28,13 @@ export async function verifyIdToken(token: string): Promise<SessionUser & { exp:
   if (!payload.sub || !payload.exp) {
     throw new Error("Invalid token payload");
   }
+  const firebase = payload.firebase as { sign_in_provider?: unknown } | undefined;
   return {
     uid: payload.sub,
     email: typeof payload.email === "string" ? payload.email : null,
     name: typeof payload.name === "string" ? payload.name : null,
     picture: typeof payload.picture === "string" ? payload.picture : null,
+    isGuest: firebase?.sign_in_provider === "anonymous",
     exp: payload.exp,
   };
 }

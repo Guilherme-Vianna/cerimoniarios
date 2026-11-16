@@ -12,13 +12,13 @@
 
 ## Project
 
-Cerimoniários: study app for Catholic altar servers. A quiz about the liturgy of the Mass (Gemini, with a reviewed
+Cerimoniários Católicos (`APP_NAME` in `lib/pwa.ts`): study app for Catholic altar servers. A quiz about the liturgy of the Mass (Gemini, with a reviewed
 question bank as fallback) → every wrong answer becomes a spaced-repetition flashcard (Anki-like) → correct answers and
 reviews give XP for a weekly and all-time leaderboard. One Next.js app deployed on Vercel; no separate backend.
 
 - Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4 (tokens and animations in `src/app/globals.css` `@theme`)
 - PostgreSQL on Neon via `postgres` (postgres.js, `prepare: false`), plain SQL, no ORM
-- Firebase Auth (Google sign-in only) on the client; `jose` verifies ID tokens on the server
+- Firebase Auth on the client (Google, email/password, anonymous "guest"); `jose` verifies ID tokens on the server
 - `@google/genai` for question generation; Vitest for unit tests; PWA (`manifest.ts`, `public/sw.js`)
 
 ## Layout
@@ -38,7 +38,11 @@ tests/              Vitest unit tests for pure server modules
 
 ## Data flow and auth
 
-1. Client signs in with Firebase (`signInWithPopup`), POSTs the ID token to `/api/session` → httpOnly `session` cookie.
+1. Client signs in with Firebase (`components/auth/auth-panel.tsx`: Google popup, email/password, or anonymous guest)
+   and POSTs the ID token to `/api/session` → httpOnly `session` cookie (+ `guest` cookie for anonymous tokens).
+   Guests (`users.is_guest`) can take quizzes but stay off the leaderboard; `proxy.ts` sends them to login for
+   `ACCOUNT_ONLY_PATHS`. On a real sign-in the client also sends the guest's ID token and the route moves its quizzes,
+   flashcards and XP to the account (`claimGuestData`).
    Inside the Android app (`../android`, a WebView) Google blocks the popup, so `lib/native-app.ts` asks the app for a
    Google ID token through `window.CerimoniariosAndroid` and signs in with `signInWithCredential`; the install button
    is hidden there. Keep the bridge protocol in sync with `android/.../auth/NativeBridge.kt`.

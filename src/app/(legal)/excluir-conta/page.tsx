@@ -11,24 +11,23 @@ export default function DeleteAccountInfoPage() {
     <>
       <div>
         <h1 className="font-serif text-4xl font-bold tracking-tight text-ink">Excluir sua conta</h1>
-        <p className="mt-2 text-lg text-muted">Você pode excluir sua conta do Cerimoniários a qualquer momento.</p>
+        <p className="mt-2 text-lg text-muted">Você pode excluir sua conta do Cerimoniários Católicos a qualquer momento.</p>
       </div>
 
       <LegalSection title="Como excluir">
         <ul>
-          <li>Entre no Cerimoniários com sua conta Google, no site ou no app para Android.</li>
+          <li>Entre no Cerimoniários Católicos com sua conta (Google ou e-mail e senha), no site ou no app para Android.</li>
           <li>Toque na sua foto, no canto de cima, e escolha Minha conta.</li>
-          <li>Toque em Excluir minha conta e confirme com a sua conta Google.</li>
+          <li>Toque em Excluir minha conta e confirme com sua conta Google ou sua senha.</li>
         </ul>
         <p>
-          Se não conseguir entrar, peça a exclusão <ContactLink />, escrevendo do e-mail da conta Google que você usa
-          no app.
+          Se não conseguir entrar, peça a exclusão <ContactLink />, escrevendo do e-mail da conta que você usa no app.
         </p>
       </LegalSection>
 
       <LegalSection title="O que é apagado">
         <p>
-          Apagamos na hora e de forma definitiva seu cadastro (nome, e-mail e foto), suas provas e respostas, seus
+          Apagamos na hora e de forma definitiva seu cadastro (nome, e-mail e foto, quando houver), suas provas e respostas, seus
           flashcards e seu XP. Você também sai do ranking. Não guardamos cópia desses dados.
         </p>
         <p>

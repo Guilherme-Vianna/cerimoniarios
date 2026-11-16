@@ -10,9 +10,11 @@ const messages: Record<string, string> = {
   "auth/network-request-failed": "Sem conexão com a internet. Verifique sua rede e tente de novo.",
   "auth/popup-blocked": "O navegador bloqueou a janela do Google. Permita pop-ups para este site e tente de novo.",
   "auth/account-exists-with-different-credential":
-    "Este e-mail já está cadastrado com outro método de login. Entre com e-mail e senha.",
+    "Este e-mail já está cadastrado com outro método de login. Entre com e-mail e senha.",  "auth/missing-email": "Digite seu e-mail.",
+  "auth/operation-not-allowed": "Este tipo de login ainda não está ativado. Tente entrar com o Google.",
+  "auth/admin-restricted-operation": "O modo visitante ainda não está ativado. Entre com o Google ou com e-mail e senha.",
   "auth/user-disabled": "Esta conta foi desativada. Fale com o suporte.",
-  "auth/user-mismatch": "Escolha a mesma conta Google que você usa no Cerimoniários.",
+  "auth/user-mismatch": "Escolha a mesma conta Google que você usa no Cerimoniários Católicos.",
   "auth/requires-recent-login": "Por segurança, saia e entre de novo antes de excluir a conta.",
   "native/no-account":
     "Nenhuma conta Google neste aparelho. Adicione uma conta nas configurações do Android e tente de novo.",

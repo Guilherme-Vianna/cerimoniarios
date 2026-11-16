@@ -15,6 +15,7 @@ export type Account = {
   email: string | null;
   name: string | null;
   photo_url: string | null;
+  is_guest: boolean;
   stats: {
     xp_total: number;
     xp_week: number;

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "@/components/app/logo";
-import { GoogleSignIn } from "@/components/auth/google-sign-in";
+import { AuthPanel } from "@/components/auth/auth-panel";
 import { Alert } from "@/components/ui/alert";
 import { ACCOUNT_DELETED_PARAM, PRIVACY_PATH } from "@/lib/auth/constants";
 
@@ -43,7 +43,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/">) {
           </p>
           <div className="mt-10 flex flex-col gap-4">
             {deleted && <Alert tone="success">Sua conta foi excluída. Obrigado por ter estudado com a gente.</Alert>}
-            <GoogleSignIn expired={params.sessao === "expirada"} />
+            <AuthPanel expired={params.sessao === "expirada"} />
           </div>
         </section>
 

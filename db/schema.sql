@@ -7,6 +7,7 @@ create table if not exists users (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+alter table users add column if not exists is_guest boolean not null default false;
 
 create table if not exists quizzes (
   id uuid primary key,
