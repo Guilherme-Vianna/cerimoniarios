@@ -1,19 +1,21 @@
 "use client";
 
 import {
+  getAdditionalUserInfo,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInAnonymously,
   signInWithCredential,
   signInWithPopup,
   signOut,
-  type User,
+  type UserCredential,
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { trackGuestStart, trackLogin, trackSignUp, type SignInMethod } from "@/lib/analytics";
 import { HOME_PATH, NEXT_PARAM, QUIZ_PATH } from "@/lib/auth/constants";
 import { createServerSession } from "@/lib/auth/client-session";
 import { authErrorMessage } from "@/lib/auth/errors";
@@ -65,12 +67,14 @@ export function AuthPanel({ expired }: { expired: boolean }) {
   }
 
   /** Signs in for real; a guest's quizzes, flashcards and XP move to the account on the server. */
-  async function signInAndFinish(signIn: () => Promise<User>) {
+  async function signInAndFinish(method: SignInMethod, signIn: () => Promise<UserCredential>) {
     const auth = getFirebaseAuth();
     const guest = auth.currentUser?.isAnonymous ? auth.currentUser : null;
     const guestToken = guest ? await guest.getIdToken() : undefined;
-    const user = await signIn();
-    await createServerSession(user, true, guestToken);
+    const credential = await signIn();
+    await createServerSession(credential.user, true, guestToken);
+    if (getAdditionalUserInfo(credential)?.isNewUser) trackSignUp(method, Boolean(guest));
+    else trackLogin(method);
     setStatus("redirecting");
     router.replace(destinationAfterLogin());
   }
@@ -79,22 +83,22 @@ export function AuthPanel({ expired }: { expired: boolean }) {
     setError(null);
     setStatus("google");
     try {
-      await signInAndFinish(async () => {
+      await signInAndFinish("google", async () => {
         const auth = getFirebaseAuth();
         if (isNativeApp()) {
-          return (await signInWithCredential(auth, GoogleAuthProvider.credential(await nativeGoogleIdToken()))).user;
+          return signInWithCredential(auth, GoogleAuthProvider.credential(await nativeGoogleIdToken()));
         }
-        return (await signInWithPopup(auth, createGoogleProvider())).user;
+        return signInWithPopup(auth, createGoogleProvider());
       });
     } catch (caught) {
       fail(caught);
     }
   }
 
-  async function handleEmail(signIn: () => Promise<User>) {
+  async function handleEmail(signIn: () => Promise<UserCredential>) {
     setError(null);
     setStatus("email");
-    await signInAndFinish(signIn);
+    await signInAndFinish("email", signIn);
   }
 
   async function handleGuest() {
@@ -104,6 +108,7 @@ export function AuthPanel({ expired }: { expired: boolean }) {
       const auth = getFirebaseAuth();
       const user = auth.currentUser?.isAnonymous ? auth.currentUser : (await signInAnonymously(auth)).user;
       await createServerSession(user, true);
+      trackGuestStart();
       setStatus("redirecting");
       router.replace(QUIZ_PATH);
     } catch (caught) {

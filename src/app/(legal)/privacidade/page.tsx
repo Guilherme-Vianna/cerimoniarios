@@ -70,6 +70,7 @@ export default function PrivacyPage() {
           <li>Neon, banco de dados onde ficam suas provas, flashcards e XP.</li>
           <li>Vercel, que hospeda o site.</li>
           <li>Google Gemini, que gera as perguntas (sem dados que identifiquem você).</li>
+          <li>Google Ads e Google Analytics, para medir os anúncios do site.</li>
           <li>Google AdMob e Google Play, no app para Android.</li>
         </ul>
         <p>Alguns desses serviços guardam dados fora do Brasil, com as garantias previstas na LGPD.</p>
@@ -80,6 +81,23 @@ export default function PrivacyPage() {
           No app para Android, quem não contribuiu vê um banner pequeno, que pode ser desligado a qualquer momento em
           Apoiar → Anúncios. Quando a lei exige, o app pede seu consentimento antes de mostrar anúncios
           personalizados; você pode mudar a escolha em Apoiar → Privacidade dos anúncios.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="Medição de anúncios e doações">
+        <p>
+          O site usa a Google Tag (Google Ads e Google Analytics) para saber quais anúncios trazem pessoas que realmente
+          estudam. Ela usa cookies e registra ações como entregar uma prova, criar conta, compartilhar a pontuação e
+          copiar a chave Pix, sem enviar seu nome, e-mail ou respostas. Você pode bloquear esses cookies nas
+          configurações do navegador e ver ou limitar os anúncios personalizados em{" "}
+          <a href="https://myadcenter.google.com" target="_blank" rel="noreferrer">
+            myadcenter.google.com
+          </a>
+          .
+        </p>
+        <p>
+          Doações por Pix são feitas no app do seu banco. Como em qualquer Pix, quem recebe vê o nome de quem pagou; não
+          recebemos nenhum outro dado bancário.
         </p>
       </LegalSection>
 

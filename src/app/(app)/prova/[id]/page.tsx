@@ -22,5 +22,5 @@ export default async function QuizPage({ params }: PageProps<"/prova/[id]">) {
   }
 
   if (quiz.status === "completed") return <QuizResult quiz={quiz} guest={account.is_guest} />;
-  return <QuizRunner key={quiz.id} quiz={quiz} />;
+  return <QuizRunner key={quiz.id} quiz={quiz} guest={account.is_guest} />;
 }

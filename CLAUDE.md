@@ -77,6 +77,13 @@ Tables: `users`, `quizzes`, `quiz_questions` (options `jsonb`), `flashcards`, `x
 and run `pnpm db:setup` against each database. The production Neon DB was created by the old FastAPI/Alembic API and has
 an extra `alembic_version` table; leave it.
 
+## Tracking and donations
+
+- `lib/analytics.ts` wraps gtag (no-op without `NEXT_PUBLIC_GOOGLE_TAG_ID`). Events: `complete_quiz` (micro-conversion),
+  `donate_click` (macro), `sign_up`, `login`, `guest_start`, `share`. Never send names, emails or answers.
+- The Pix donation card (`components/support/donation-card.tsx`) shows only after a quiz result and never inside the
+  Android app (Play Billing rules). Keep the privacy policy in sync with what is tracked.
+
 ## UI conventions
 
 - Mobile first: bottom tab bar on small screens (Prova, Flashcards, Ranking), top nav on desktop; header has help,

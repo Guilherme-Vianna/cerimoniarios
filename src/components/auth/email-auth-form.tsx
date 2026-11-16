@@ -6,7 +6,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   updateProfile,
-  type User,
+  type UserCredential,
 } from "firebase/auth";
 import { useState, type FormEvent } from "react";
 import { Alert } from "@/components/ui/alert";
@@ -27,7 +27,7 @@ const titles: Record<Mode, { submit: string; pending: string }> = {
 type EmailAuthFormProps = {
   disabled: boolean;
   /** Runs the Firebase sign-in and finishes the app session (moving guest data along). */
-  onSignIn: (signIn: () => Promise<User>) => Promise<void>;
+  onSignIn: (signIn: () => Promise<UserCredential>) => Promise<void>;
   onError: (error: unknown) => void;
 };
 
@@ -59,14 +59,14 @@ export function EmailAuthForm({ disabled, onSignIn, onError }: EmailAuthFormProp
       }
       if (mode === "signup") {
         await onSignIn(async () => {
-          const { user } = await createUserWithEmailAndPassword(auth, address, password);
-          await updateProfile(user, { displayName: name.trim() });
-          sendEmailVerification(user).catch(() => undefined);
-          return user;
+          const credential = await createUserWithEmailAndPassword(auth, address, password);
+          await updateProfile(credential.user, { displayName: name.trim() });
+          sendEmailVerification(credential.user).catch(() => undefined);
+          return credential;
         });
         return;
       }
-      await onSignIn(async () => (await signInWithEmailAndPassword(auth, address, password)).user);
+      await onSignIn(() => signInWithEmailAndPassword(auth, address, password));
     } catch (error) {
       onError(error);
     } finally {

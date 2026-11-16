@@ -1,9 +1,11 @@
 import { GuestNotice } from "@/components/app/guest-notice";
+import { DonationCard } from "@/components/support/donation-card";
 import { LinkButton } from "@/components/ui/link-button";
 import { ReferenceLink } from "@/components/ui/reference-link";
 import type { Question, Quiz } from "@/lib/api/types";
 import { QUIZ_PATH, REVIEW_PATH } from "@/lib/auth/constants";
 import { plural } from "@/lib/format";
+import { ShareScore } from "./share-score";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
@@ -51,6 +53,7 @@ export function QuizResult({ quiz, guest = false }: { quiz: Quiz; guest?: boolea
           <LinkButton href={QUIZ_PATH} variant={cards > 0 ? "secondary" : "primary"}>
             Fazer outra prova
           </LinkButton>
+          <ShareScore score={score} total={quiz.total} />
         </div>
         {usedBank && (
           <p className="mt-4 text-sm text-muted">
@@ -58,6 +61,8 @@ export function QuizResult({ quiz, guest = false }: { quiz: Quiz; guest?: boolea
           </p>
         )}
       </section>
+
+      <DonationCard />
 
       <section aria-labelledby="review-title" className="flex flex-col gap-4">
         <h2 id="review-title" className="text-xl font-semibold">

@@ -8,6 +8,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Modal } from "@/components/ui/modal";
 import { QuizRunnerSkeleton } from "@/components/app/page-skeletons";
 import { abandonQuiz, submitQuiz } from "@/lib/actions";
+import { trackQuizComplete } from "@/lib/analytics";
 import type { Quiz } from "@/lib/api/types";
 import { QUIZ_PATH } from "@/lib/auth/constants";
 import { plural } from "@/lib/format";
@@ -38,13 +39,21 @@ function writeSaved(quizId: string, value: { answers: Answers; index: number } |
 
 const noopSubscribe = () => () => {};
 
-export function QuizRunner({ quiz }: { quiz: Quiz }) {
+export function QuizRunner({ quiz, guest = false }: { quiz: Quiz; guest?: boolean }) {
   const isClient = useSyncExternalStore(noopSubscribe, () => true, () => false);
   if (!isClient) return <QuizRunnerSkeleton />;
-  return <Runner quiz={quiz} saved={readSaved(quiz.id)} />;
+  return <Runner quiz={quiz} guest={guest} saved={readSaved(quiz.id)} />;
 }
 
-function Runner({ quiz, saved }: { quiz: Quiz; saved: { answers: Answers; index: number } | null }) {
+function Runner({
+  quiz,
+  guest,
+  saved,
+}: {
+  quiz: Quiz;
+  guest: boolean;
+  saved: { answers: Answers; index: number } | null;
+}) {
   const router = useRouter();
   const questions = quiz.questions;
   const [answers, setAnswers] = useState<Answers>(saved?.answers ?? {});
@@ -107,6 +116,11 @@ function Runner({ quiz, saved }: { quiz: Quiz; saved: { answers: Answers; index:
         questions.map((item) => ({ question_id: item.id, selected_index: answers[item.id] ?? null })),
       );
       if (result.ok) {
+        trackQuizComplete({
+          total: questions.length,
+          answered: answeredCount,
+          guest,
+        });
         writeSaved(quiz.id, null);
         setConfirmOpen(false);
       } else {
