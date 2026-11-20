@@ -91,8 +91,8 @@ an extra `alembic_version` table; leave it.
   account menu (help + sign out) and the PWA "Instalar" button.
 - Loading states are skeletons (`components/ui/skeleton.tsx`, `components/app/page-skeletons.tsx`), never "Carregando…"
   text; spinners only inside buttons for in-flight actions.
-- Destructive actions use `ConfirmDialog`; animations come from `@theme` (`animate-fade-up`, `card-in`, `pop`, …) and
-  respect `prefers-reduced-motion`.
+- Ad funnel (`/`, `/prova`, quiz result): main action = gold `cta` variant of `Button`/`LinkButton` (`ui/cta.tsx`).
+- Destructive actions use `ConfirmDialog`; animations come from `@theme` and respect `prefers-reduced-motion`.
 
 ## Commands
 

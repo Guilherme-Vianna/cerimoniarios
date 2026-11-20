@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { ArrowIcon } from "@/components/ui/cta";
 import { startQuiz } from "@/lib/actions";
 import type { Topic } from "@/lib/api/types";
 import { QUIZ_PATH } from "@/lib/auth/constants";
@@ -30,7 +31,7 @@ export function QuizSetup({ topics, initialTopic }: { topics: Topic[]; initialTo
   }
 
   return (
-    <section aria-labelledby="start-title" className="flex min-w-0 flex-col gap-5 rounded-3xl border border-border bg-surface p-6 sm:p-8">
+    <section aria-labelledby="start-title" className="flex min-w-0 animate-fade-up flex-col gap-5 rounded-3xl border-2 border-gold/40 bg-surface p-6 shadow-sm sm:p-8">
       <div>
         <h2 id="start-title" className="text-xl font-semibold">
           Nova prova
@@ -42,9 +43,13 @@ export function QuizSetup({ topics, initialTopic }: { topics: Topic[]; initialTo
 
       {error && <Alert tone="error">{error}</Alert>}
 
-      <Button loading={pending} loadingLabel="Preparando perguntas…" onClick={begin}>
-        Começar prova
+      <Button variant="cta" loading={pending} loadingLabel="Preparando perguntas…" onClick={begin}>
+        Começar prova agora
+        <ArrowIcon />
       </Button>
+      {!pending && (
+        <p className="-mt-2 text-center text-sm text-muted">Grátis · cerca de {Math.max(2, Math.round(size / 3))} minutos · correção na hora</p>
+      )}
       {pending && (
         <p role="status" className="-mt-2 text-center text-sm text-muted">
           A IA está escrevendo suas perguntas. Pode levar até 30 segundos.

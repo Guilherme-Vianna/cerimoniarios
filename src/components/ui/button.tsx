@@ -1,9 +1,11 @@
 import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
+import { CTA_CLASSES, CtaShine } from "./cta";
 import { Spinner } from "./spinner";
 
-type Variant = "primary" | "secondary" | "danger" | "link";
+type Variant = "primary" | "cta" | "secondary" | "danger" | "link";
 
 const variants: Record<Variant, string> = {
+  cta: CTA_CLASSES,
   primary:
     "h-12 rounded-full bg-primary px-6 font-medium text-white hover:bg-primary-hover disabled:bg-primary/60",
   danger:
@@ -39,11 +41,12 @@ export function Button({
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      className={`inline-flex cursor-pointer items-center justify-center gap-3 text-base transition-[color,background-color,border-color,transform] active:scale-[0.97] disabled:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed ${variants[variant]} ${block ? "w-full" : ""} ${className}`}
+      className={`group inline-flex cursor-pointer items-center justify-center gap-3 text-base transition-[color,background-color,border-color,transform] active:scale-[0.97] disabled:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed ${variants[variant]} ${block ? "w-full" : ""} ${className}`}
       {...props}
     >
+      {variant === "cta" && !loading && <CtaShine />}
       {loading ? <Spinner /> : icon}
-      <span>{loading && loadingLabel ? loadingLabel : children}</span>
+      <span className="inline-flex items-center gap-2">{loading && loadingLabel ? loadingLabel : children}</span>
     </button>
   );
 }

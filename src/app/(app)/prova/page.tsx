@@ -20,13 +20,15 @@ export default async function QuizHomePage({ searchParams }: PageProps<"/prova">
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6">
       <div>
-        <h1 className="font-serif text-4xl font-bold tracking-tight">{name ? `Olá, ${name}!` : "Olá!"}</h1>
-        <p className="mt-2 text-muted">Responda a prova e revise o que errar nos flashcards.</p>
+        <h1 className="font-serif text-4xl font-bold tracking-tight">
+          {account.is_guest ? "Quanto você sabe sobre a Missa?" : name ? `Olá, ${name}!` : "Olá!"}
+        </h1>
+        <p className="mt-2 text-muted">
+          {account.is_guest
+            ? "Faça a prova agora, veja a correção com explicação e descubra o que revisar antes de servir."
+            : "Responda a prova e revise o que errar nos flashcards."}
+        </p>
       </div>
-
-      {account.is_guest && (
-        <GuestNotice>Você está como visitante. Entre para guardar suas provas, flashcards e XP na sua conta.</GuestNotice>
-      )}
 
       {inProgress ? (
         <section className="flex flex-col gap-4 rounded-3xl border border-primary/20 bg-primary-soft p-6">
@@ -38,6 +40,10 @@ export default async function QuizHomePage({ searchParams }: PageProps<"/prova">
         </section>
       ) : (
         <QuizSetup topics={topics} initialTopic={typeof tema === "string" ? tema : null} />
+      )}
+
+      {account.is_guest && (
+        <GuestNotice>Você está como visitante. Entre para guardar suas provas, flashcards e XP na sua conta.</GuestNotice>
       )}
 
       {completed.length > 0 && (

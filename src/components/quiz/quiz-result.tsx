@@ -1,5 +1,6 @@
-import { GuestNotice } from "@/components/app/guest-notice";
+import { loginHref } from "@/components/app/guest-notice";
 import { DonationCard } from "@/components/support/donation-card";
+import { ArrowIcon } from "@/components/ui/cta";
 import { LinkButton } from "@/components/ui/link-button";
 import { ReferenceLink } from "@/components/ui/reference-link";
 import type { Question, Quiz } from "@/lib/api/types";
@@ -24,12 +25,6 @@ export function QuizResult({ quiz, guest = false }: { quiz: Quiz; guest?: boolea
 
   return (
     <div className="flex flex-col gap-8">
-      {guest && (
-        <GuestNotice next={`${QUIZ_PATH}/${quiz.id}`}>
-          Este resultado está guardado como visitante. Entre com Google ou e-mail para que o XP conte no ranking e os
-          flashcards fiquem na sua conta.
-        </GuestNotice>
-      )}
       <section aria-labelledby="result-title" className="animate-fade-up rounded-3xl border border-border bg-surface p-6 sm:p-8">
         <p className="text-sm font-medium text-gold">
           {quiz.topic_label}
@@ -49,9 +44,15 @@ export function QuizResult({ quiz, guest = false }: { quiz: Quiz; guest?: boolea
           </div>
         </dl>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          {cards > 0 && <LinkButton href={REVIEW_PATH}>Revisar {plural(cards, "flashcard", "flashcards")}</LinkButton>}
-          <LinkButton href={QUIZ_PATH} variant={cards > 0 ? "secondary" : "primary"}>
+          {!guest && cards > 0 && (
+            <LinkButton href={REVIEW_PATH} variant="cta">
+              Revisar {plural(cards, "flashcard", "flashcards")}
+              <ArrowIcon />
+            </LinkButton>
+          )}
+          <LinkButton href={QUIZ_PATH} variant={guest || cards > 0 ? "secondary" : "cta"}>
             Fazer outra prova
+            {!guest && cards === 0 && <ArrowIcon />}
           </LinkButton>
           <ShareScore score={score} total={quiz.total} />
         </div>
@@ -61,6 +62,8 @@ export function QuizResult({ quiz, guest = false }: { quiz: Quiz; guest?: boolea
           </p>
         )}
       </section>
+
+      {guest && <SaveProgressCard quizId={quiz.id} xp={quiz.xp_earned ?? 0} cards={cards} />}
 
       <DonationCard />
 
@@ -75,6 +78,46 @@ export function QuizResult({ quiz, guest = false }: { quiz: Quiz; guest?: boolea
         </ol>
       </section>
     </div>
+  );
+}
+
+function SaveProgressCard({ quizId, xp, cards }: { quizId: string; xp: number; cards: number }) {
+  const benefits = [
+    xp > 0 ? `+${xp} XP contando no ranking semanal dos cerimoniários` : "XP de cada acerto contando no ranking semanal",
+    cards > 0
+      ? `${plural(cards, "flashcard", "flashcards")} com explicação para revisar o que você errou`
+      : "Flashcards automáticos para cada pergunta que você errar",
+    "Revisão espaçada que traz cada card de volta na hora certa",
+  ];
+  return (
+    <section
+      aria-labelledby="save-title"
+      className="flex animate-fade-up flex-col gap-5 rounded-3xl border-2 border-gold/50 bg-gold-soft p-6 shadow-sm [animation-delay:250ms] sm:p-8"
+    >
+      <div>
+        <p className="text-sm font-semibold tracking-wide text-gold uppercase">Não perca seu progresso</p>
+        <h2 id="save-title" className="mt-1 font-serif text-3xl font-bold tracking-tight">
+          Salve seu resultado em 10 segundos
+        </h2>
+        <p className="mt-2 text-ink">
+          Você está como visitante. Entre com Google ou e-mail, é grátis, e tudo desta prova vai para a sua conta.
+        </p>
+      </div>
+      <ul className="flex flex-col gap-2">
+        {benefits.map((benefit) => (
+          <li key={benefit} className="flex items-start gap-2 text-ink">
+            <span aria-hidden="true" className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-success text-xs font-bold text-white">
+              ✓
+            </span>
+            {benefit}
+          </li>
+        ))}
+      </ul>
+      <LinkButton href={loginHref(`${QUIZ_PATH}/${quizId}`)} variant="cta">
+        Salvar meu progresso grátis
+        <ArrowIcon />
+      </LinkButton>
+    </section>
   );
 }
 

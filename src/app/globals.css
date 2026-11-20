@@ -28,6 +28,8 @@
   --animate-reveal: reveal 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   --animate-float-up: float-up 1.2s ease-out both;
   --animate-shake: shake 0.4s ease-in-out both;
+  --animate-cta-glow: cta-glow 2.4s ease-in-out infinite;
+  --animate-shimmer: shimmer 3.2s ease-in-out infinite;
 
   @keyframes page-in {
     from {
@@ -82,6 +84,28 @@
       transform: translateY(-28px);
     }
   }
+  @keyframes cta-glow {
+    0%,
+    100% {
+      box-shadow:
+        0 10px 24px -10px rgb(122 31 61 / 0.55),
+        0 0 0 0 rgb(183 134 43 / 0.45);
+    }
+    50% {
+      box-shadow:
+        0 10px 24px -10px rgb(122 31 61 / 0.55),
+        0 0 0 10px rgb(183 134 43 / 0);
+    }
+  }
+  @keyframes shimmer {
+    0%,
+    60% {
+      transform: translateX(-120%) skewX(-20deg);
+    }
+    100% {
+      transform: translateX(320%) skewX(-20deg);
+    }
+  }
   @keyframes shake {
     0%,
     100% {
@@ -106,6 +130,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .animate-cta-glow,
+  .animate-shimmer {
+    animation: none !important;
+  }
   *,
   *::before,
   *::after {

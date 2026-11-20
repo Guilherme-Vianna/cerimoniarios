@@ -31,7 +31,7 @@ function destinationAfterLogin() {
   return safeNextPath(new URLSearchParams(window.location.search).get(NEXT_PARAM)) ?? HOME_PATH;
 }
 
-export function AuthPanel({ expired }: { expired: boolean }) {
+export function AuthPanel({ expired, guestOption = true }: { expired: boolean; guestOption?: boolean }) {
   const router = useRouter();
   const configured = isFirebaseConfigured();
   const [status, setStatus] = useState<Status>(configured ? "restoring" : "idle");
@@ -169,6 +169,7 @@ export function AuthPanel({ expired }: { expired: boolean }) {
 
       <EmailAuthForm disabled={busy && status !== "email"} onSignIn={handleEmail} onError={fail} />
 
+      {guestOption && (
       <div className="mt-2 flex flex-col gap-2 rounded-3xl border border-dashed border-border-strong/60 p-4">
         <Button
           variant="secondary"
@@ -184,6 +185,7 @@ export function AuthPanel({ expired }: { expired: boolean }) {
           O resultado fica guardado e passa para a sua conta quando você entrar.
         </p>
       </div>
+      )}
     </div>
   );
 }
